@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include "services.h"
 
 // Gets the list of all discipline ids with its titles
 char* getAllDisciplinesList() {
@@ -34,7 +35,7 @@ char* getDisciplineSchedule(char discipline_id[]) {
 
 // Gets commentary of discipline with given id
 char* getDisciplineCommentary(char discipline_id[]) {
-	
+
 }
 
 // Sets commentary of discipline with given id
