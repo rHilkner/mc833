@@ -1,6 +1,5 @@
 #include <stdio.h>
 #include <stdlib.h>
-
 #include <netdb.h>
 #include <netinet/in.h>
 
@@ -11,7 +10,7 @@ int main(int argc, char *argv[]) {
     struct sockaddr_in serv_addr;
     struct hostent *server;
 
-    char buffer[1024];
+    char buffer[1025];
 
     if (argc < 3) {
         fprintf(stderr,"usage %s hostname port\n", argv[0]);
@@ -44,35 +43,37 @@ int main(int argc, char *argv[]) {
         perror("ERROR connecting");
         exit(1);
     }
-
-    bzero(buffer,256);
-    n = read(sockfd, buffer, 255);
-    printf("%s\n",buffer);
-
+    n = 0;
+    while(n==0){
+        bzero(buffer,1025);
+        n = read(sockfd, buffer, 1025);
+        printf("%s\n",buffer);
+    }
     /* Now ask for a message from the user, this message
        * will be read by server
     */
+    while(1) {
+        printf("Please enter the message: ");
+        bzero(buffer, 1025);
+        fgets(buffer, 1025, stdin);
 
-    printf("Please enter the message: ");
-    bzero(buffer,1024);
-    fgets(buffer,1024,stdin);
+        /* Send message to the server */
+        n = write(sockfd, buffer, strlen(buffer));
 
-    /* Send message to the server */
-    n = write(sockfd, buffer, strlen(buffer));
+        if (n < 0) {
+            perror("ERROR writing to socket");
+            exit(1);
+        }
 
-    if (n < 0) {
-        perror("ERROR writing to socket");
-        exit(1);
+        /* Now read server response */
+        bzero(buffer, 1025);
+        n = read(sockfd, buffer, 1025);
+
+        if (n < 0) {
+            perror("ERROR reading from socket");
+            exit(1);
+        }
+        printf("%s\n", buffer);
     }
-
-    /* Now read server response */
-    bzero(buffer,1024);
-    n = read(sockfd, buffer, 1024);
-
-    if (n < 0) {
-        perror("ERROR reading from socket");
-        exit(1);
-    }
-    printf("%s\n",buffer);
     return 0;
 }
