@@ -1,83 +1,78 @@
 #include <stdio.h>
-#include <string.h>
 #include <stdlib.h>
 
-// Gets the dicipline's identificator
-char* getDisciplineID(char request[]) {
-	char *discipline_id = calloc(6, sizeof(char));
+#include <netdb.h>
+#include <netinet/in.h>
 
-	strncpy(discipline_id, request, 5);
-	discipline_id[5] = 0;
+#include <string.h>
 
-	return discipline_id;
-}
+int main(int argc, char *argv[]) {
+    int sockfd, portno, n;
+    struct sockaddr_in serv_addr;
+    struct hostent *server;
 
-// Gets the type of the request
-char* getRequestType(char request[]) {
-	char *space_pointer;
-	char *request_type;
+    char buffer[1024];
 
-	space_pointer = strstr(request, " ");
-	space_pointer++;
+    if (argc < 3) {
+        fprintf(stderr,"usage %s hostname port\n", argv[0]);
+        exit(0);
+    }
 
-	request_type = calloc(strlen(space_pointer), sizeof(char));
-	strcpy(request_type, space_pointer);
+    portno = atoi(argv[2]);
 
-	return request_type;
-}
+    /* Create a socket point */
+    sockfd = socket(AF_INET, SOCK_STREAM, 0);
 
-// Parses given request of type ""
-char* getRequest(char request[]) {
-	char *discipline_id;
-	char *request_type;
+    if (sockfd < 0) {
+        perror("ERROR opening socket");
+        exit(1);
+    }
 
-	discipline_id = getDisciplineID(request);
-	request_type = getRequestType(request);
+    server = gethostbyname(argv[1]);
 
-	char *request_answer;
+    if (server == NULL) {
+        fprintf(stderr,"ERROR, no such host\n");
+        exit(0);
+    }
 
-	if (strcmp(request_type, "title") == 0) {
-		char req_answer[] = "Invalid request type.\n\0";
-		request_answer = calloc(strlen(req_answer), sizeof(char));
-		strcpy(request_answer, req_answer);
+    bzero((char *) &serv_addr, sizeof(serv_addr));
+    serv_addr.sin_family = AF_INET;
+    bcopy((char *)server->h_addr, (char *)&serv_addr.sin_addr.s_addr, server->h_length);
+    serv_addr.sin_port = htons(portno);
+    /* Now connect to the server */
+    if (connect(sockfd, (struct sockaddr*)&serv_addr, sizeof(serv_addr)) < 0) {
+        perror("ERROR connecting");
+        exit(1);
+    }
 
-	} else if (strcmp(request_type, "menu") == 0) {
-		char req_answer[] = "Invalid request type.\n\0";
-		request_answer = calloc(strlen(req_answer), sizeof(char));
-		strcpy(request_answer, req_answer);
+    bzero(buffer,256);
+    n = read(sockfd, buffer, 255);
+    printf("%s\n",buffer);
 
-	} else if (strcmp(request_type, "schedule") == 0) {
-		char req_answer[] = "Invalid request type.\n\0";
-		request_answer = calloc(strlen(req_answer), sizeof(char));
-		strcpy(request_answer, req_answer);
+    /* Now ask for a message from the user, this message
+       * will be read by server
+    */
 
-	} else if (strcmp(request_type, "commentary") == 0) {
-		char req_answer[] = "Invalid request type.\n\0";
-		request_answer = calloc(strlen(req_answer), sizeof(char));
-		strcpy(request_answer, req_answer);
+    printf("Please enter the message: ");
+    bzero(buffer,1024);
+    fgets(buffer,1024,stdin);
 
-	} else {
-		char req_answer[] = "Invalid request type.\n\0";
-		request_answer = calloc(strlen(req_answer), sizeof(char));
-		strcpy(request_answer, req_answer);
-	}
+    /* Send message to the server */
+    n = write(sockfd, buffer, strlen(buffer));
 
-	free(discipline_id);
-	free(request_type);
+    if (n < 0) {
+        perror("ERROR writing to socket");
+        exit(1);
+    }
 
-	return request_answer;
-	
-}
+    /* Now read server response */
+    bzero(buffer,1024);
+    n = read(sockfd, buffer, 1024);
 
-
-
-int main() {
-	char a[] = "MC833 menu\0";
-	char *request_answer = getRequest(a);
-
-	printf("%s\n", request_answer);
-
-	free(request_answer);
-
-	return 0;
+    if (n < 0) {
+        perror("ERROR reading from socket");
+        exit(1);
+    }
+    printf("%s\n",buffer);
+    return 0;
 }
