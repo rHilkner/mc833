@@ -89,6 +89,7 @@ char* getRequest(char request[], permission user_permission) {
 		} else if (strcmp(request_type, "commentary") == 0) {
 			request_answer = getDisciplineCommentary(discipline_id);
 
+<<<<<<< HEAD
 		} else {
 			char req_answer[] = "Invalid request type.\n\0";
 			request_answer = calloc(strlen(req_answer), sizeof(char));
@@ -105,3 +106,15 @@ char* getRequest(char request[], permission user_permission) {
 	return request_answer;
 	
 }
+=======
+//int main() {
+//	char a[] = "MC833 menu\0";
+//	char *request_answer = getRequest(a);
+//
+//	printf("%s\n", request_answer);
+//
+//	free(request_answer);
+//
+//	return 0;
+//}
+>>>>>>> b64aaf173deb727d76eefb44b98df078fc4b4fd5

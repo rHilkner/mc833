@@ -9,7 +9,10 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
-#include <sys/time.h> //FD_SET, FD_ISSET, FD_ZERO macros 
+#include <sys/time.h> //FD_SET, FD_ISSET, FD_ZERO macros
+#include "controller.h"
+#include "controller.c"
+
 
 #define TRUE   1
 #define FALSE  0
@@ -23,13 +26,13 @@ int main(int argc , char *argv[])
     int max_sd;
     struct sockaddr_in address;
 
-    char buffer[1025];  //data buffer of 1K 
-
+    char buffer[1025];  //data buffer of 1K
+    char* info;
     //set of socket descriptors 
     fd_set readfds;
 
     //a message 
-    char *message = "ECHO Daemon v1.0 \r\n";
+    char *message = "Aooooo meu abençoado, Tá conectado! \r\n";
 
     //initialise all client_socket[] to 0 so not checked 
     for (i = 0; i < max_clients; i++)
@@ -173,7 +176,8 @@ int main(int argc , char *argv[])
                     //set the string terminating NULL byte on the end 
                     //of the data read 
                     buffer[valread] = '\0';
-                    send(sd , buffer , strlen(buffer) , 0 );
+                    info = getRequest(buffer);
+                    send(sd , info , strlen(info) , 0 );
                 }
             }
         }
