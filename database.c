@@ -1,83 +1,52 @@
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
+#include "database.h"
 
-// Gets the dicipline's identificator
-char* getDisciplineID(char request[]) {
-	char *discipline_id = calloc(6, sizeof(char));
-
-	strncpy(discipline_id, request, 5);
-	discipline_id[5] = 0;
-
-	return discipline_id;
-}
-
-// Gets the type of the request
-char* getRequestType(char request[]) {
-	char *space_pointer;
-	char *request_type;
-
-	space_pointer = strstr(request, " ");
-	space_pointer++;
-
-	request_type = calloc(strlen(space_pointer), sizeof(char));
-	strcpy(request_type, space_pointer);
-
-	return request_type;
-}
-
-// Parses given request of type ""
-char* getRequest(char request[]) {
-	char *discipline_id;
-	char *request_type;
-
-	discipline_id = getDisciplineID(request);
-	request_type = getRequestType(request);
-
-	char *request_answer;
-
-	if (strcmp(request_type, "title") == 0) {
-		char req_answer[] = "Invalid request type.\n\0";
-		request_answer = calloc(strlen(req_answer), sizeof(char));
-		strcpy(request_answer, req_answer);
-
-	} else if (strcmp(request_type, "menu") == 0) {
-		char req_answer[] = "Invalid request type.\n\0";
-		request_answer = calloc(strlen(req_answer), sizeof(char));
-		strcpy(request_answer, req_answer);
-
-	} else if (strcmp(request_type, "schedule") == 0) {
-		char req_answer[] = "Invalid request type.\n\0";
-		request_answer = calloc(strlen(req_answer), sizeof(char));
-		strcpy(request_answer, req_answer);
-
-	} else if (strcmp(request_type, "commentary") == 0) {
-		char req_answer[] = "Invalid request type.\n\0";
-		request_answer = calloc(strlen(req_answer), sizeof(char));
-		strcpy(request_answer, req_answer);
-
-	} else {
-		char req_answer[] = "Invalid request type.\n\0";
-		request_answer = calloc(strlen(req_answer), sizeof(char));
-		strcpy(request_answer, req_answer);
-	}
-
-	free(discipline_id);
-	free(request_type);
-
-	return request_answer;
+discipline *disciplines = {
+	discipline mc102 = {
+		.id = "MC102",
+		.title = "Algoritmos e Programação de Computadores",
+		.menu = "Conceitos básicos de organização de computadores. Construção de algoritmos e sua representação em pseudocódigo e linguagens de alto nível. Desenvolvimento sistemático e implementação de programas. Estruturação, depuração, testes e documentação de programas. Resolução de problemas.",
+		.schedule = "Seg 10h-12h / Ter 10h-12h / Qui 10h-12h",
+		.commentary = ""
+	},
 	
-}
+	discipline mc202 = {
+		.id = "MC202",
+		.title = "Estruturas de Dados",
+		.menu = "Estruturas básicas para representação de informações: listas, árvores, grafos e suas generalizações. Algoritmos para construção, consulta e manipulação de tais estruturas. Desenvolvimento, implementação e testes de programas usando tais estruturas em aplicações específicas.",
+		.schedule = "Ter 10h-12h / Qui 10h-12h / Qui 14h-16h",
+		.commentary = ""
+	},
+	
+	discipline mc358 = {
+		.id = "MC358",
+		.title = "Fundamentos Matemáticos da Computação",
+		.menu = "Conceitos básicos de matemática discreta e de lógica para computação. Técnicas de provas, indução matemática. Relações e conceitos de teoria de grafos. Modelagem de problemas usando grafos.",
+		.schedule = "Ter 19h-21h / Qua 19h-21h",
+		.commentary = ""
+	},
+	
+	discipline mc536 = {
+		.id = "MC536",
+		.title = "Bancos de Dados: Teoria e Prática",
+		.menu = "Arquiteturas de sistemas de gerenciamento de bancos de dados. Modelagem de dados: modelos conceituais e lógicos, incluindo o modelo relacional e normalização. Álgebra relacional. Linguagens de definição e de manipulação de dados. Otimização de consultas. Mecanismos de proteção, recuperação e segurança. Controle de concorrência. Bancos de dados não relacionais. Projeto e desenvolvimento de ferramentas e técnicas utilizadas na solução de problemas de sistemas de informação, utilizando bancos de dados. Modelagem, especificação, projeto e implementação de aplicações em sistemas de informação.",
+		.schedule = "Ter 19h-21h / Qui 19h-23h",
+		.commentary = ""
+	},
+	
+	discipline mc833 = {
+		.id = "MC833",
+		.title = "Programação de Redes de Computadores",
+		.menu = "Programação utilizando diferentes tecnologias de comunicação: sockets, TCP e UDP, e chamada de método remoto.",
+		.schedule = "Qui 10h-12h",
+		.commentary = ""
+	},
 
+};
 
-
-int main() {
-	char a[] = "MC833 menu\0";
-	char *request_answer = getRequest(a);
-
-	printf("%s\n", request_answer);
-
-	free(request_answer);
-
-	return 0;
-}
+// discipline _ = {
+// 	.id = "",
+// 	.title = "",
+// 	.menu = "",
+// 	.schedule = "",
+// 	.commentary = ""
+// }

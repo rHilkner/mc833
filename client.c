@@ -15,7 +15,7 @@ int main(int argc, char *argv[]) {
     char buffer[1024];
 
     if (argc < 3) {
-        fprintf(stderr,"usage %s hostname port\n", argv[0]);
+        fprintf(stderr, "usage %s hostname port\n", argv[0]);
         exit(0);
     }
 
@@ -32,7 +32,7 @@ int main(int argc, char *argv[]) {
     server = gethostbyname(argv[1]);
 
     if (server == NULL) {
-        fprintf(stderr,"ERROR, no such host\n");
+        fprintf(stderr, "ERROR, no such host\n");
         exit(0);
     }
 
@@ -46,17 +46,17 @@ int main(int argc, char *argv[]) {
         exit(1);
     }
 
-    bzero(buffer,256);
+    bzero(buffer, 256);
     n = read(sockfd, buffer, 255);
-    printf("%s\n",buffer);
+    printf("%s\n", buffer);
 
-    /* Now ask for a message from the user, this message
+    /* Now get  message from the user, this message
        * will be read by server
     */
 
     printf("Please enter the message: ");
-    bzero(buffer,1024);
-    fgets(buffer,1024,stdin);
+    bzero(buffer, 1024);
+    fgets(buffer, 1024, stdin);
 
     /* Send message to the server */
     n = write(sockfd, buffer, strlen(buffer));
@@ -67,13 +67,13 @@ int main(int argc, char *argv[]) {
     }
 
     /* Now read server response */
-    bzero(buffer,1024);
+    bzero(buffer, 1024);
     n = read(sockfd, buffer, 1024);
 
     if (n < 0) {
         perror("ERROR reading from socket");
         exit(1);
     }
-    printf("%s\n",buffer);
+    printf("%s\n", buffer);
     return 0;
 }
