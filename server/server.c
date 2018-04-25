@@ -222,6 +222,12 @@ void readSocketIO(skt *socket) {
 
 // Let the magic begin...
 int main(int argc , char *argv[]) {
+
+    // Getting timeval structs to get time delay on requests made
+    struct timeval start, stop;
+    int processment_time[7][30];
+    int k = 0;
+
 	// Initializing all sockets with blank
 	initializeSockets();
 
@@ -229,14 +235,48 @@ int main(int argc , char *argv[]) {
 	setMasterSocket();
 
     printf("Waiting for connections...\n");
+
+
+
+    // connecting to client
+
+
+    // Adding every valid (not blank) socket to the reading set
+    addValidSocketsToReadSet();
+
+    // Waiting for an activity on one of the sockets
+    waitForActivity();
+
+    // Calculating time of processment after receiving an activity
+    gettimeofday(&start, NULL);
+
+    // If master socket is on reading set, then it is an incoming connection 
+    if (FD_ISSET(master_socket.fd, &readfds)) {
+        readIncomingConnections();
+    }
+
+    // For every socket, if it is on the reading set then read its IO operation
+    for (int i = 0; i < MAX_CLIENTS; i++) {
+        skt *socket = &client_socket[i];
+
+        if (FD_ISSET(socket->fd, &readfds)) {
+            readSocketIO(socket);
+        }
+    }
+
+
+    // reading requests and calculating processment time
     
     // Accepting incoming connections
-    while (1) {
+    while (k < 8*30) {
     	// Adding every valid (not blank) socket to the reading set
         addValidSocketsToReadSet();
 
         // Waiting for an activity on one of the sockets
         waitForActivity();
+
+        // Calculating time of processment after receiving an activity
+        gettimeofday(&start, NULL);
 
         // If master socket is on reading set, then it is an incoming connection 
         if (FD_ISSET(master_socket.fd, &readfds)) {
@@ -251,6 +291,28 @@ int main(int argc , char *argv[]) {
             	readSocketIO(socket);
             }
         }
+
+        // Getting final time of processment
+        gettimeofday(&stop, NULL);
+
+        if (k < 6*30) {
+            processment_time[k/30][k%30] = stop.tv_usec - start.tv_usec;
+        } else {
+            if (k%2) {
+                processment_time[6][(k%60)/2] = stop.tv_usec - start.tv_usec;
+            } else {
+                processment_time[6][(k%60)/2] += stop.tv_usec - start.tv_usec;
+            }
+        }
+
+        k++;
+    }
+
+    for (int i = 0; i < 7; i++) {
+        for (int j = 0; j < 30; j++) {
+            printf("%d\t", processment_time[i][j]);
+        }
+        printf("\n");
     }
 
     return 0;
