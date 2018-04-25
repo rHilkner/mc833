@@ -1,6 +1,9 @@
 #ifndef SERVICES_H
 #define SERVICES_H
 
+// Verifies if given discipline id is valid
+extern int isValid(char* discipline_id);
+
 // Gets the list of all discipline ids with its titles
 extern char* getAllDisciplinesList();
 
@@ -23,7 +26,7 @@ extern char* getDisciplineSchedule(char discipline_id[]);
 extern char* getDisciplineCommentary(char discipline_id[]);
 
 // Sets commentary of discipline with given id
-extern char* setDisciplineCommentary(char discipline_id[]);
+extern char* setDisciplineCommentary(char discipline_id[], char discipline_commentary[]);
 
 
 #endif

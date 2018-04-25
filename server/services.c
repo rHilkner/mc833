@@ -5,28 +5,37 @@
 #include "services.h"
 #include "database.h"
 
-extern discipline *disciplines;
-static int MSG_MAX_SIZE = 2048;
+extern discipline disciplines[5];
+
+int isValid(char* discipline_id) {
+	if (findDiscipline(discipline_id) != NULL) {
+		return 1;
+	}
+
+	return 0;
+}
+
 
 // Gets the list of all discipline ids with its titles
 char* getAllDisciplinesList() {
 	// Initializing string
-	char *disciplines_list = NULL;
+	char *disciplines_list;
 	disciplines_list = malloc(2 * sizeof(char));
 	disciplines_list[0] = '\0';
+
+	int x = 0;
 
 	// Getting number of elements in disciplines array
 	int db_length = sizeof(disciplines)/sizeof(discipline);
 
 	// Searching for discipline with given id
-	for (i = 0; i < db_length; i++) {
+	for (int i = 0; i < db_length; i++) {
 		disciplines_list = realloc(disciplines_list, (strlen(disciplines_list) +
 													  strlen(disciplines[i].id) +
 													  strlen(disciplines[i].title) + 4) * sizeof(char));
 		strcat(disciplines_list, disciplines[i].id);
 		strcat(disciplines_list, " - ");
 		strcat(disciplines_list, disciplines[i].title);
-		strcat(disciplines_list, "\n");
 	}
 
 	strcat(disciplines_list, "\n");
@@ -35,9 +44,40 @@ char* getAllDisciplinesList() {
 }
 
 
+// Gets discipline info for given discipline
+char* buildDisciplineInfo(discipline disc) {
+	char *discipline_info;
+
+	discipline_info = malloc((strlen(disc.id) + strlen(disc.title) + strlen(disc.menu)
+							 + strlen(disc.schedule) + strlen(disc.commentary) + 100) * sizeof(char));
+
+	// Return discipline info as string:
+	// "disc.id - disc.title\n"
+	// "- Menu: disc.menu\n"
+	// "- Schedule: disc.schedule\n"
+	// "- Commentary: disc.commentary\n\n"
+
+	strcpy(discipline_info, disc.id);
+	strcat(discipline_info, " - ");
+	strcat(discipline_info, disc.title);
+	strcat(discipline_info, "\n");
+	strcat(discipline_info, "- Menu: ");
+	strcat(discipline_info, disc.menu);
+	strcat(discipline_info, "\n");
+	strcat(discipline_info, "- Schedule: ");
+	strcat(discipline_info, disc.schedule);
+	strcat(discipline_info, "\n");
+	strcat(discipline_info, "- Commentary: ");
+	strcat(discipline_info, disc.commentary);
+	strcat(discipline_info, "\n\n");
+
+	return discipline_info;
+}
+
+
 // Gets discipline informartion for all disciplines
 char* getAllDisciplinesInfos() {
-	char *disciplines_infos = NULL;
+	char *disciplines_infos;
 	disciplines_infos = malloc(1 * sizeof(char));
 	disciplines_infos[0] = '\0';
 
@@ -45,10 +85,10 @@ char* getAllDisciplinesInfos() {
 	int db_length = sizeof(disciplines)/sizeof(discipline);
 
 	// Searching for discipline with given id
-	for (i = 0; i < db_length; i++) {
-		char* disc_info = getDisciplineInfo(disciplines[i]);
+	for (int i = 0; i < db_length; i++) {
+		char *disc_info = buildDisciplineInfo(disciplines[i]);
 
-		disciplines_infos = (*char) realloc(disciplines_infos, (strlen(disciplines_infos) +
+		disciplines_infos = (char*) realloc(disciplines_infos, (strlen(disciplines_infos) +
 																strlen(disc_info)) * sizeof(char));
 
 		strcat(disciplines_infos, disc_info);
@@ -63,47 +103,15 @@ char* getAllDisciplinesInfos() {
 // Gets all information of discipline with given id
 char* getDisciplineInfo(char discipline_id[]) {
 	// Finding discipline by id and getting its information
-	discipline disc = findDiscipline(discipline_id);
-	return getDisciplineInfo(disc);
-}
-
-// Gets discipline info for given discipline
-char* getDisciplineInfo(discipline* disc) {
-	char *discipline_info;
-
-	discipline_info = malloc((strlen(disc->id) + strlen(disc->title) + strlen(disc->menu)
-							 + strlen(disc->schedule) + strlen(disc->commentary) + 100) * sizeof(char));
-
-	// Return discipline info as string:
-	// "disc.id - disc.title\n"
-	// "- Menu: disc.menu\n"
-	// "- Schedule: disc.schedule\n"
-	// "- Commentary: disc.commentary\n\n"
-
-	strcpy(discipline_info, disc.id);
-	strcat(discipline_info, , " - ");
-	strcat(discipline_info, , disc.title);
-	strcat(discipline_info, , "\n");
-	strcat(discipline_info, , "- Menu: ");
-	strcat(discipline_info, , disc.menu);
-	strcat(discipline_info, , "\n");
-	strcat(discipline_info, , "- Schedule: ");
-	strcat(discipline_info, , disc.schedule);
-	strcat(discipline_info, , "\n");
-	strcat(discipline_info, , "- Commentary: ");
-	strcat(discipline_info, , disc.commentary);
-	strcat(discipline_info, , "\n\n");
-
-	return discipline_info;
+	discipline *disc = findDiscipline(discipline_id);
+	return buildDisciplineInfo(*disc);
 }
 
 
 // Gets title of discipline with given id
 char* getDisciplineTitle(char discipline_id[]) {
-	char *discipline_title;
-	discipline *disc = getDiscipline(discipline_id);
-
-	discipline_info = malloc(strlen(disc->title) + 20, sizeof(char));
+	discipline *disc = findDiscipline(discipline_id);
+	char *discipline_title = malloc((strlen(disc->title) + 20) * sizeof(char));
 	
 	strcpy(discipline_title, "- Title: ");
 	strcat(discipline_title, disc->title);
@@ -115,10 +123,10 @@ char* getDisciplineTitle(char discipline_id[]) {
 
 // Gets menu of discipline with given id
 char* getDisciplineMenu(char discipline_id[]) {
-	char discipline_menu[2048];
+	discipline *disc = findDiscipline(discipline_id);
+	char *discipline_menu = malloc((strlen(disc->menu) + 20) * sizeof(char));
 	
 	strcpy(discipline_menu, "- Menu: ");
-	discipline *disc = getDiscipline(discipline_id);
 	strcat(discipline_menu, disc->menu);
 	strcat(discipline_menu, "\n\n");
 
@@ -128,10 +136,10 @@ char* getDisciplineMenu(char discipline_id[]) {
 
 // Gets schedule of discipline with given id
 char* getDisciplineSchedule(char discipline_id[]) {
-	char discipline_schedule[2048];
+	discipline *disc = findDiscipline(discipline_id);
+	char *discipline_schedule = malloc((strlen(disc->schedule) + 20) * sizeof(char));
 	
 	strcpy(discipline_schedule, "- Schedule: ");
-	discipline *disc = getDiscipline(discipline_id);
 	strcat(discipline_schedule, disc->schedule);
 	strcat(discipline_schedule, "\n\n");
 
@@ -141,10 +149,10 @@ char* getDisciplineSchedule(char discipline_id[]) {
 
 // Gets commentary of discipline with given id
 char* getDisciplineCommentary(char discipline_id[]) {
-	char discipline_commentary[2048];
+	discipline *disc = findDiscipline(discipline_id);
+	char *discipline_commentary = malloc((strlen(disc->commentary) + 20) * sizeof(char));
 
 	strcpy(discipline_commentary, "- Commentary: ");
-	discipline *disc = getDiscipline(discipline_id);
 	strcat(discipline_commentary, disc->commentary);
 	strcat(discipline_commentary, "\n\n");
 
@@ -154,11 +162,10 @@ char* getDisciplineCommentary(char discipline_id[]) {
 
 // Sets commentary of discipline with given id
 char* setDisciplineCommentary(char discipline_id[], char discipline_commentary[]) {
-	char return_string[2048];
+	discipline *disc = findDiscipline(discipline_id);
+	char* return_string = malloc(100 * sizeof(char));
 
-	discipline *disc = getDiscipline(discipline_id);
-
-	if (*disc == NULL) {
+	if (disc == NULL) {
 		strcpy(return_string, "- WARNING: Given discipline couldn't be found in database.\n\n");
 		return return_string;
 	}
@@ -169,20 +176,4 @@ char* setDisciplineCommentary(char discipline_id[], char discipline_commentary[]
 	strcpy(return_string, "-> Commentary was successfully added to the database.\n\n");
 
 	return return_string;
-}
-
-
-discipline* findDiscipline(char discipline_id[]) {
-
-	// Getting number of elements in disciplines array
-	int db_length = sizeof(disciplines)/sizeof(discipline);
-
-	// Searching for discipline with given id
-	for (i = 0; i < db_length; i++) {
-		if (strcmp(disciplines[i].id, discipline_id) == 0) {
-			return &disciplines[i];
-		}
-	}
-
-	return NULL;
 }

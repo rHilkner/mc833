@@ -10,6 +10,9 @@ typedef struct disc {
    char* commentary;
 } discipline;
 
-extern discipline* disciplines;
+extern discipline disciplines[];
+
+// Finds discipline with given id
+extern discipline* findDiscipline(char discipline_id[]);
 
 #endif
