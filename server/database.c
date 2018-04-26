@@ -6,7 +6,7 @@ discipline disciplines[] = {
 	{
 		.id = "MC102",
 		.title = "Algoritmos e Programação de Computadores",
-		.menu = "Conceitos básicos de organização de computadores. Construção de algoritmos e sua representação em pseudocódigo e linguagens de alto nível. Desenvolvimento sistemático e implementação de programas. Estruturação, depuração, testes e documentação de programas. Resolução de problemas.",
+		.menu = "Conceitos básicos de organização de computadores.",
 		.schedule = "Seg 10h-12h / Ter 10h-12h / Qui 10h-12h",
 		.commentary = ""
 	},
@@ -14,7 +14,7 @@ discipline disciplines[] = {
 	{
 		.id = "MC202",
 		.title = "Estruturas de Dados",
-		.menu = "Estruturas básicas para representação de informações: listas, árvores, grafos e suas generalizações. Algoritmos para construção, consulta e manipulação de tais estruturas. Desenvolvimento, implementação e testes de programas usando tais estruturas em aplicações específicas.",
+		.menu = "Estruturas básicas para representação de informações: listas, árvores, grafos e suas generalizações.",
 		.schedule = "Ter 10h-12h / Qui 10h-12h / Qui 14h-16h",
 		.commentary = ""
 	},
@@ -22,7 +22,7 @@ discipline disciplines[] = {
 	{
 		.id = "MC358",
 		.title = "Fundamentos Matemáticos da Computação",
-		.menu = "Conceitos básicos de matemática discreta e de lógica para computação. Técnicas de provas, indução matemática. Relações e conceitos de teoria de grafos. Modelagem de problemas usando grafos.",
+		.menu = "Conceitos básicos de matemática discreta e de lógica para computação.",
 		.schedule = "Ter 19h-21h / Qua 19h-21h",
 		.commentary = ""
 	},
@@ -30,7 +30,7 @@ discipline disciplines[] = {
 	{
 		.id = "MC536",
 		.title = "Bancos de Dados: Teoria e Prática",
-		.menu = "Arquiteturas de sistemas de gerenciamento de bancos de dados. Modelagem de dados: modelos conceituais e lógicos, incluindo o modelo relacional e normalização. Álgebra relacional. Linguagens de definição e de manipulação de dados. Otimização de consultas. Mecanismos de proteção, recuperação e segurança. Controle de concorrência. Bancos de dados não relacionais. Projeto e desenvolvimento de ferramentas e técnicas utilizadas na solução de problemas de sistemas de informação, utilizando bancos de dados. Modelagem, especificação, projeto e implementação de aplicações em sistemas de informação.",
+		.menu = "Arquiteturas de sistemas de gerenciamento de bancos de dados.",
 		.schedule = "Ter 19h-21h / Qui 19h-23h",
 		.commentary = ""
 	},

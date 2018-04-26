@@ -175,6 +175,7 @@ char* addCommentary(char* commentary, skt *socket) {
 			if (addComment[i].socket_fd == socket->fd) {
 				addComment[i].socket_fd = 0;
 				addComment[i].discipline_id[0] = '\0';
+				break;
 			}
 		}
 		return NULL;
@@ -188,6 +189,8 @@ char* addCommentary(char* commentary, skt *socket) {
 			strcpy(discipline_id, addComment[i].discipline_id);
 			addComment[i].socket_fd = 0;
 			addComment[i].discipline_id[0] = '\0';
+			socket->permission = professor;
+			break;
 		}
 	}
 

@@ -139,7 +139,7 @@ void readIncomingConnections() {
     // Sending new connection greeting message
     char *message = "You are connected to 1s2018 IC disciplines' database.\nAre you (1) a student or (2) a professor? ";
 
-    if (send(new_socket, message, strlen(message), 0) != strlen(message)) {
+    if (write(new_socket, message, strlen(message)) != strlen(message)) {
         perror("send");
     }
 
@@ -184,6 +184,7 @@ void readSocketIO(skt *socket) {
     else {
         // Setting the string terminating NULL byte on the end of the data read
         buffer[valread] = '\0';
+        printf("%s", buffer);
         char* answer;
 
         // Interpreting incoming message and getting the answer
@@ -215,7 +216,7 @@ void readSocketIO(skt *socket) {
     	}
 
     	// Echoing answer back to client
-    	send(socket->fd, answer, strlen(answer), 0);
+    	write(socket->fd, answer, strlen(answer));
         free(answer);
     }
 }
@@ -268,7 +269,7 @@ int main(int argc , char *argv[]) {
     // reading requests and calculating processment time
     
     // Accepting incoming connections
-    while (k < 8*30) {
+    while (k <= 8*30) {
     	// Adding every valid (not blank) socket to the reading set
         addValidSocketsToReadSet();
 
@@ -296,12 +297,12 @@ int main(int argc , char *argv[]) {
         gettimeofday(&stop, NULL);
 
         if (k < 6*30) {
-            processment_time[k/30][k%30] = stop.tv_usec - start.tv_usec;
+            processment_time[k/30][k%30] = (stop.tv_sec - start.tv_sec) * 1000000 + (stop.tv_usec - start.tv_usec);
         } else {
             if (k%2) {
-                processment_time[6][(k%60)/2] = stop.tv_usec - start.tv_usec;
+                processment_time[6][(k%60)/2] = (stop.tv_sec - start.tv_sec) * 1000000 + (stop.tv_usec - start.tv_usec);
             } else {
-                processment_time[6][(k%60)/2] += stop.tv_usec - start.tv_usec;
+                processment_time[6][(k%60)/2] += (stop.tv_sec - start.tv_sec) * 1000000 + (stop.tv_usec - start.tv_usec);
             }
         }
 
@@ -314,6 +315,8 @@ int main(int argc , char *argv[]) {
         }
         printf("\n");
     }
+
+    sleep(10);
 
     return 0;
 }

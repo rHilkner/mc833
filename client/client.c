@@ -22,24 +22,24 @@ void simulateRequests() {
     struct timeval start, stop;
 
     // Keeping time array of each request
-    int request_times[7][num_requests];
+    long long int request_times[7][num_requests];
 
-    char *all_list = "all list";
-    char *all_info = "all info";
-    char *mc833_title = "MC833 title";
-    char *mc833_menu = "MC833 menu";
-    char *mc833_schedule = "MC833 schedule";
-    char *mc833_commentary = "MC833 commentary";
-    char *mc833_addCommentary = "MC833 addCommentary";
-    char *commentary = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent mollis aliquet mattis. Pellentesque vitae dolor in massa tincidunt finibus. Sed interdum nisi neque, eget lobortis eros pretium sed. Vivamus eu finibus eros. Aliquam rhoncus molestie ante. Etiam consequat ligula id ante rutrum, at faucibus mauris egestas. Pellentesque tincidunt mi dui, nec vehicula sem pretium nec. Morbi placerat maximus magna. Nullam nulla sapien, viverra vel molestie in, tincidunt eget lorem. Fusce id dictum turpis. Mauris a bibendum purus.\n\
-Morbi quis nibh ut nibh convallis scelerisque nec vel metus. Nam imperdiet ipsum in fringilla rutrum. In magna turpis, efficitur nec velit sit amet, accumsan posuere arcu. Proin ullamcorper volutpat eleifend. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse efficitur ornare porttitor. Praesent eu augue vel lectus maximus pharetra eget non nisl.\n\
-In molestie aliquam viverra. Sed vel placerat justo, id porttitor velit. Phasellus consectetur diam ac felis ultrices nullam.\n";
+    char *all_list = "all list\n";
+    char *all_info = "all info\n";
+    char *mc833_title = "MC833 title\n";
+    char *mc833_menu = "MC833 menu\n";
+    char *mc833_schedule = "MC833 schedule\n";
+    char *mc833_commentary = "MC833 commentary\n";
+    char *mc833_addCommentary = "MC833 addCommentary\n\0";
+    char *commentary = "Lorem ipsum dolor sit amet, consectetur adipiscing elit.\n\0";
 
     char *requests[] = {all_list, all_info, mc833_title, mc833_menu, mc833_schedule, mc833_commentary, mc833_addCommentary};
 
     // Assigning to database as professor
     // Send message to the server
     int n = write(socket_fd, "2", strlen("2"));
+
+    int i, j, k = 0;
 
     if (n < 0) {
         perror("ERROR writing to socket");
@@ -59,10 +59,11 @@ In molestie aliquam viverra. Sed vel placerat justo, id porttitor velit. Phasell
     }
 
     // simulating all requests
-    for (int i = 0; i < 6; i++) {
-        char* current_request = requests[i];
+    for (i = 0; i < 6; i++) {
+        char current_request[1030];
+        strcpy(current_request, requests[i]);
 
-        for (int j = 0; j < num_requests; j++) {
+        for (j = 0; j < num_requests; j++) {
             // Getting initial time
             gettimeofday(&start, NULL);
 
@@ -86,26 +87,28 @@ In molestie aliquam viverra. Sed vel placerat justo, id porttitor velit. Phasell
             // Getting final time
             gettimeofday(&stop, NULL);
 
-            request_times[i][j] = stop.tv_usec - start.tv_usec;
+            request_times[i][j] = (stop.tv_sec - start.tv_sec) * 1000000 + (stop.tv_usec - start.tv_usec);
         }
         
     }
 
+    char current_request[1000];
     // simulating addCommentary (2 reqs needed)
-    for (int j = 0; j < 2*num_requests; j++) {
-        char* current_request;
+    for (j = 0; j < 2*num_requests; j++) {
+        printf("j=%d ", j);
 
         // Getting initial time
         gettimeofday(&start, NULL);
 
-        if (j%2) {
-            current_request = requests[6];
+        if (j%2 == 0) {
+            strcpy(current_request, requests[6]);
         } else {
-            current_request = commentary;
+            strcpy(current_request, commentary);
         }
 
         // Send message to the server
         int n = write(socket_fd, current_request, strlen(current_request));
+        printf("%s", current_request);
 
         if (n < 0) {
             perror("ERROR writing to socket");
@@ -115,6 +118,7 @@ In molestie aliquam viverra. Sed vel placerat justo, id porttitor velit. Phasell
         // Now read server response
         bzero(buffer, BUFFER_SIZE);
         n = read(socket_fd, buffer, BUFFER_SIZE);
+        printf("%s", buffer);
 
         if (n < 0) {
             perror("ERROR reading from socket");
@@ -124,21 +128,22 @@ In molestie aliquam viverra. Sed vel placerat justo, id porttitor velit. Phasell
         // Getting final time
         gettimeofday(&stop, NULL);
 
-        if (j%2) {
-            request_times[6][j/2] = stop.tv_usec - start.tv_usec;
+        if (j%2 == 0) {
+            request_times[6][j/2] = (stop.tv_sec - start.tv_sec) * 1000000 + (stop.tv_usec - start.tv_usec);
         } else {
-            request_times[6][j/2] += stop.tv_usec - start.tv_usec;
+            request_times[6][j/2] += (stop.tv_sec - start.tv_sec) * 1000000 + (stop.tv_usec - start.tv_usec);
         }
         
     }
 
+    sleep(1);
+
     // printing times
-    for (int i = 0; i < 7; i++) {
-        for (int j = 0; j < num_requests; j++) {
-            printf("%d\t", request_times[i][j]);
+    for (i = 0; i < 7; i++) {
+        for (j = 0; j < num_requests; j++) {
+            printf("%llu\t", request_times[i][j]);
         }
         printf("\n");
-
     }
 }
 
@@ -182,6 +187,8 @@ int main(int argc, char *argv[]) {
         exit(1);
     }
 
+    sleep(2);
+
     // Wait for welcome message (handshake)
     while (n == 0) {
         bzero(buffer, BUFFER_SIZE);
@@ -192,6 +199,8 @@ int main(int argc, char *argv[]) {
 
     // Now ask for a message from the user, this message will be read by server
     simulateRequests();
+
+    sleep(5);
 
     return 0;
 }
