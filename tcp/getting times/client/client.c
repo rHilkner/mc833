@@ -1,3 +1,6 @@
+// Description: A simple TCP client
+// Usage: ./client <host> <port>
+
 #include <stdio.h>
 #include <unistd.h>
 #include <stdlib.h>
@@ -10,7 +13,7 @@
 
 #define BUFFER_SIZE 12500
 
-char buffer[BUFFER_SIZE];
+char answer[BUFFER_SIZE];
 int socket_fd;
 
 
@@ -49,8 +52,8 @@ void simulateRequests() {
     n = 0;
     while (n == 0) {
         // Now read server response
-        bzero(buffer, BUFFER_SIZE);
-        n = read(socket_fd, buffer, BUFFER_SIZE);
+        bzero(answer, BUFFER_SIZE);
+        n = read(socket_fd, answer, BUFFER_SIZE);
     }
 
     if (n < 0) {
@@ -76,8 +79,8 @@ void simulateRequests() {
             }
 
             // Now read server response
-            bzero(buffer, BUFFER_SIZE);
-            n = read(socket_fd, buffer, BUFFER_SIZE);
+            bzero(answer, BUFFER_SIZE);
+            n = read(socket_fd, answer, BUFFER_SIZE);
 
             if (n < 0) {
                 perror("ERROR reading from socket");
@@ -113,8 +116,8 @@ void simulateRequests() {
         }
 
         // Now read server response
-        bzero(buffer, BUFFER_SIZE);
-        n = read(socket_fd, buffer, BUFFER_SIZE);
+        bzero(answer, BUFFER_SIZE);
+        n = read(socket_fd, answer, BUFFER_SIZE);
 
         if (n < 0) {
             perror("ERROR reading from socket");
@@ -187,9 +190,9 @@ int main(int argc, char *argv[]) {
 
     // Wait for welcome message (handshake)
     while (n == 0) {
-        bzero(buffer, BUFFER_SIZE);
-        n = read(socket_fd, buffer, BUFFER_SIZE);
-        printf("%s\n", buffer);
+        bzero(answer, BUFFER_SIZE);
+        n = read(socket_fd, answer, BUFFER_SIZE);
+        printf("%s\n", answer);
     }
     
 

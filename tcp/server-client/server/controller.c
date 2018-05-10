@@ -54,7 +54,7 @@ char* getRequestType(char request[]) {
 	strcpy(request_type, space_pointer);
 
 	char *pos;
-	pos = strchr(request_type, '\n');
+	pos = strstr(request_type, '\n');
 
 	if (pos != NULL)
 	    *pos = '\0';
@@ -110,7 +110,7 @@ char* getRequest(char request[], skt *socket) {
 				
 				asprintf(&request_answer, "Please, insert your commentary to discipline %s:\n", discipline_id);
 			} else {
-				request_answer = strdup("You don't have professor's permission to make this request.\n");
+				request_answer = strdup("You must have professor's permission to make this request.\n");
 			}
 
 		} else if (strcmp(request_type, "title") == 0) {

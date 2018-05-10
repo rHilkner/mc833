@@ -159,9 +159,9 @@ void readIncomingConnections() {
 
 // Reads IO operations on generic sockets
 void readSocketIO(skt *socket) {
-	// Data buffer of 1k
-    char buffer[1025];
-    int valread = read(socket->fd, buffer, 1024);
+	// Data answer of 1k
+    char answer[1025];
+    int valread = read(socket->fd, answer, 1024);
 
     // Checking if message was for closing (EOF) and also read the incoming message 
     if (valread == 0) {
@@ -183,31 +183,31 @@ void readSocketIO(skt *socket) {
     // Getting and echoing back the message that came in
     else {
         // Setting the string terminating NULL byte on the end of the data read
-        buffer[valread] = '\0';
+        answer[valread] = '\0';
         char* answer;
 
         // Interpreting incoming message and getting the answer
     	switch(socket->permission) {
 
     		case none:
-    			if (buffer[0] - '0' != 1 && buffer[0] - '0' != 2) {
+    			if (answer[0] - '0' != 1 && answer[0] - '0' != 2) {
     				char answer_string[] = "Invalid authentication.\nPlease insert (1) if you are a student or (2) if you are a professor: ";
     				answer = malloc(strlen(answer_string) * sizeof(char));
     				strcpy(answer, answer_string);
     				break;
     			}
 
-    			socket->permission = buffer[0] - '0';
+    			socket->permission = answer[0] - '0';
     			answer = getCommands();
 	    		break;
 
     		case student:
     		case professor:
-		        answer = getRequest(buffer, socket);
+		        answer = getRequest(answer, socket);
     			break;
 
     		case waitingForComment:
-    			answer = addCommentary(buffer, socket);
+    			answer = addCommentary(answer, socket);
     			break;
 
 			default:
@@ -221,10 +221,12 @@ void readSocketIO(skt *socket) {
 }
 
 // Let the magic begin...
-int main(int argc, char *argv[]) {
+int main(int argc , char *argv[]) {
 
     // Getting timeval structs to get time delay on requests made
     struct timeval start, stop;
+    int processment_time[7][30];
+    int k = 0;
 
 	// Initializing all sockets with blank
 	initializeSockets();
@@ -245,6 +247,9 @@ int main(int argc, char *argv[]) {
     // Waiting for an activity on one of the sockets
     waitForActivity();
 
+    // Calculating time of processment after receiving an activity
+    gettimeofday(&start, NULL);
+
     // If master socket is on reading set, then it is an incoming connection 
     if (FD_ISSET(master_socket.fd, &readfds)) {
         readIncomingConnections();
@@ -263,7 +268,7 @@ int main(int argc, char *argv[]) {
     // reading requests and calculating processment time
     
     // Accepting incoming connections
-    while (1) {
+    while (k <= 8*30) {
     	// Adding every valid (not blank) socket to the reading set
         addValidSocketsToReadSet();
 
@@ -286,7 +291,31 @@ int main(int argc, char *argv[]) {
             	readSocketIO(socket);
             }
         }
+
+        // Getting final time of processment
+        gettimeofday(&stop, NULL);
+
+        if (k < 6*30) {
+            processment_time[k/30][k%30] = (stop.tv_sec - start.tv_sec) * 1000000 + (stop.tv_usec - start.tv_usec);
+        } else {
+            if (k%2) {
+                processment_time[6][(k%60)/2] = (stop.tv_sec - start.tv_sec) * 1000000 + (stop.tv_usec - start.tv_usec);
+            } else {
+                processment_time[6][(k%60)/2] += (stop.tv_sec - start.tv_sec) * 1000000 + (stop.tv_usec - start.tv_usec);
+            }
+        }
+
+        k++;
     }
-    
+
+    for (int i = 0; i < 7; i++) {
+        for (int j = 0; j < 30; j++) {
+            printf("%d\t", processment_time[i][j]);
+        }
+        printf("\n");
+    }
+
+    sleep(10);
+
     return 0;
 }
