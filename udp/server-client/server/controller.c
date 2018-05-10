@@ -8,7 +8,7 @@
 
 
 char* invalidRequest() {
-	char req_answer[] = "Invalid request type or commentary.\n\n";
+	char req_answer[] = "Invalid request type.\n\n";
 	char *invalid_req = malloc(strlen(req_answer) * sizeof(char));
 	strcpy(invalid_req, req_answer);
 
@@ -38,19 +38,18 @@ char* getRequestType(char request[]) {
 	if (first_space_pointer == NULL)
 		return NULL;
 
-	first_space_pointer++;
-	second_space_pointer = strstr(first_space_pointer, " ");
+	second_space_pointer = strstr(++first_space_pointer, " ");
 
 	// Copying second word to request_type
 	if (second_space_pointer == NULL) {
 		request_type = malloc(strlen(first_space_pointer) * sizeof(char));
 		strcpy(request_type, first_space_pointer);
 	} else {
-		request_type = malloc((second_space_pointer-first_space_pointer) * sizeof(char));
+		request_type = malloc((second_space_pointer-first_space_pointer+1) * sizeof(char));
 		strncpy(request_type, first_space_pointer, second_space_pointer-first_space_pointer);
 	}
 
-	char *pos = strstr(request_type, '\n');
+	char *pos = strstr(request_type, "\n");
 
 	if (pos != NULL)
 	    *pos = '\0';
@@ -63,25 +62,26 @@ char* getUserPermission(char request[]) {
 	char *user_permission;
 
 	// Getting the spaces that separate the third word in the request
-	for (int i = 0; i < 2; i++) {
-		second_space_pointer = strstr(request, " ");
-		if (second_space_pointer == NULL)
-			return NULL;
-	}
-	second_space_pointer++;
+	second_space_pointer = strstr(request, " ");
+	if (second_space_pointer == NULL)
+		return NULL;
 
-	third_space_pointer = strstr(second_space_pointer, " ");
+	second_space_pointer = strstr(++second_space_pointer, " ");
+	if (second_space_pointer == NULL)
+		return NULL;
+
+	third_space_pointer = strstr(++second_space_pointer, " ");
 
 	// Copying third word to user_permission
 	if (third_space_pointer == NULL) {
 		user_permission = malloc(strlen(second_space_pointer) * sizeof(char));
 		strcpy(user_permission, second_space_pointer);
 	} else {
-		user_permission = malloc((third_space_pointer-second_space_pointer) * sizeof(char));
+		user_permission = malloc((third_space_pointer-second_space_pointer+1) * sizeof(char));
 		strncpy(user_permission, second_space_pointer, third_space_pointer-second_space_pointer);
 	}
 
-	char *pos = strstr(user_permission, '\n');
+	char *pos = strstr(user_permission, "\n");
 
 	if (pos != NULL)
 	    *pos = '\0';
@@ -93,17 +93,23 @@ char *getCommentary(char request[]) {
 	char *third_space_pointer;
 	char *commentary;
 
-	for (int i = 0; i < 3; i++) {
-		third_space_pointer = strstr(request, " ");
-		if (third_space_pointer == NULL)
-			return NULL;
-	}
-	third_space_pointer++;
+
+	third_space_pointer = strstr(request, " ");
+	if (third_space_pointer == NULL)
+		return NULL;
+
+	third_space_pointer = strstr(++third_space_pointer, " ");
+	if (third_space_pointer == NULL)
+		return NULL;
+
+	third_space_pointer = strstr(++third_space_pointer, " ");
+	if (third_space_pointer == NULL)
+		return NULL;
 	
-	commentary = malloc(strlen(third_space_pointer) * sizeof(char));
+	commentary = malloc(strlen(++third_space_pointer) * sizeof(char));
 	strcpy(commentary, third_space_pointer);
 
-	char *pos = strstr(commentary, '\n');
+	char *pos = strstr(commentary, "\n");
 
 	if (pos != NULL)
 	    *pos = '\0';
@@ -118,6 +124,7 @@ char* getRequest(char request[]) {
 
 	char *request_type;
 	char *request_answer;
+	int q;
 
 	request_type = getRequestType(request);
 
@@ -145,18 +152,27 @@ char* getRequest(char request[]) {
 		if (!isValid(discipline_id)) {
 			request_answer = invalidRequest();
 
-		} else if (strcmp(request_type, "addCommentary") == 0) {
+		} else if (strncmp(request_type, "addCommentary", 13) == 0) {
 
-			if (strcmp(getUserPermission(request), "professor") == 0) {
+			char *user_permission = getUserPermission(request);
+
+			if (strncmp(user_permission, "professor", 9) == 0) {
 				char *commentary = getCommentary(request);
 				
 				if (commentary == NULL) {
-					request_answer = invalidRequest();
+					request_answer = strdup("The commentary is invalid.\n");
 				} else {
 					request_answer = setDisciplineCommentary(discipline_id, commentary);
 				}
+
+				free(commentary);
+
 			} else {
 				request_answer = strdup("You must have professor's permission to make this request.\n");
+			}
+
+			if (user_permission != NULL) {
+				free(user_permission);
 			}
 
 		} else if (strcmp(request_type, "title") == 0) {

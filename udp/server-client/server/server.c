@@ -30,9 +30,13 @@ int main(int argc, char **argv) {
     struct sockaddr_in clientaddr; /* client addr */
     struct hostent *hostp; /* client host info */
     char buffer[BUFSIZE]; /* message buffer */
+    char *answer; /* request answer */
     char *hostaddrp; /* dotted decimal host addr string */
     int optval; /* flag value for setsockopt */
     int n; /* message byte size */
+    // timeval structs to get time delay on requests made (in milliseconds)
+    struct timeval start, stop;
+    long long int processing_time;
 
     // Creating the master socket
     master_socket = socket(AF_INET, SOCK_DGRAM, 0);
@@ -82,10 +86,10 @@ int main(int argc, char **argv) {
         printf("server received datagram from %s (%s)\n", hostp->h_name, hostaddrp);
         printf("server received %lu/%d bytes: %s\n", strlen(buffer), n, buffer);
 
-        strcpy(buffer, getRequest(buffer));
+        answer = getRequest(buffer);
 
         // sendto: echo the input back to the client
-        n = sendto(master_socket, buffer, strlen(buffer), 0,
+        n = sendto(master_socket, answer, strlen(answer), 0,
                    (struct sockaddr *) &clientaddr, clientlen);
         if (n < 0)
             error("ERROR in sendto");

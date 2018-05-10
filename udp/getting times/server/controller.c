@@ -81,8 +81,6 @@ char* getUserPermission(char request[]) {
 		strncpy(user_permission, second_space_pointer, third_space_pointer-second_space_pointer);
 	}
 
-	printf("useperm: %s\n", user_permission);
-
 	char *pos = strstr(user_permission, "\n");
 
 	if (pos != NULL)
@@ -126,9 +124,9 @@ char* getRequest(char request[]) {
 
 	char *request_type;
 	char *request_answer;
+	int q;
 
 	request_type = getRequestType(request);
-	printf("reqtype: %s, ", request_type);
 
 	// Checking if request valid
 	if (request_type == NULL) {
@@ -154,11 +152,11 @@ char* getRequest(char request[]) {
 		if (!isValid(discipline_id)) {
 			request_answer = invalidRequest();
 
-		} else if (strcmp(request_type, "addCommentary") == 0) {
+		} else if (strncmp(request_type, "addCommentary", 13) == 0) {
 
 			char *user_permission = getUserPermission(request);
 
-			if (strcmp(user_permission, "professor") == 0) {
+			if (strncmp(user_permission, "professor", 9) == 0) {
 				char *commentary = getCommentary(request);
 				
 				if (commentary == NULL) {
@@ -190,7 +188,6 @@ char* getRequest(char request[]) {
 			request_answer = getDisciplineCommentary(discipline_id);
 
 		} else {
-			printf("1\n");
 			request_answer = invalidRequest();
 		}
 

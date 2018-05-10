@@ -47,7 +47,7 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit.";
     				   };
 
     // Simulating all requests
-    for (i = 6; i < 7; i++) {
+    for (i = 0; i < 7; i++) {
         char current_request[BUFFER_SIZE];
         strcpy(current_request, requests[i]);
 
@@ -86,12 +86,12 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit.";
     sleep(1);
 
     // printing times
-    // for (i = 0; i < 7; i++) {
-    //     for (j = 0; j < num_requests; j++) {
-    //         printf("%llu\t", request_times[i][j]);
-    //     }
-    //     printf("\n");
-    // }
+    for (i = 0; i < 7; i++) {
+        for (j = 0; j < num_requests; j++) {
+            printf("%llu\t", request_times[i][j]);
+        }
+        printf("\n");
+    }
 }
 
 // Wrapper for perror
@@ -107,8 +107,6 @@ int main(int argc, char **argv) {
     struct hostent *server;
     char *hostname;
     char answer[BUFFER_SIZE];
-    char *message = "cmd:addcomentary,class12";
-    char *authentication = "#Professor#";
 
     // Checking command line arguments
     if (argc != 3) {

@@ -11,7 +11,7 @@
 #include <netinet/in.h>
 #include <netdb.h> 
 
-#define BUFSIZE 1024
+#define BUFFER_SIZE 1024
 
 // Wrapper for perror
 void error(char *msg) {
@@ -25,8 +25,8 @@ int main(int argc, char **argv) {
     struct sockaddr_in serveraddr;
     struct hostent *server;
     char *hostname;
-    char buf[BUFSIZE];
-    char *message = "mc833aaaaaaaaa";
+    char buffer[BUFFER_SIZE];
+    char *message = "MC833 title";
 
     // Checking command line arguments
     if (argc != 3) {
@@ -51,24 +51,25 @@ int main(int argc, char **argv) {
     // Building the server's Internet address */
     bzero((char *) &serveraddr, sizeof(serveraddr));
     serveraddr.sin_family = AF_INET;
-    bcopy((char *)server->h_addr, 
-      (char *)&serveraddr.sin_addr.s_addr, server->h_length);
+    bcopy((char *)server->h_addr,
+          (char *)&serveraddr.sin_addr.s_addr,
+          server->h_length);
     serveraddr.sin_port = htons(portno);
 
-    strcpy(buf, message);
+    strcpy(buffer, message);
 
     // Sending the message to the server
     serverlen = sizeof(serveraddr);
-    n = sendto(sockfd, buf, strlen(buf), 0, &serveraddr, serverlen);
+    n = sendto(sockfd, buffer, strlen(buffer), 0, &serveraddr, serverlen);
     if (n < 0) 
       error("ERROR in sendto");
     
     // Printing the server's reply
-    n = recvfrom(sockfd, buf, BUFSIZE, 0, &serveraddr, &serverlen);
+    n = recvfrom(sockfd, buffer, BUFFER_SIZE, 0, &serveraddr, &serverlen);
     if (n < 0) 
       error("ERROR in recvfrom");
     
-    printf("%s", buf);
+    printf("%s", buffer);
 
     return 0;
 }

@@ -34,6 +34,9 @@ int main(int argc, char **argv) {
     char *hostaddrp; /* dotted decimal host addr string */
     int optval; /* flag value for setsockopt */
     int n; /* message byte size */
+    // timeval structs to get time delay on requests made (in milliseconds)
+    struct timeval start, stop;
+    long long int processing_time;
 
     // Creating the master socket
     master_socket = socket(AF_INET, SOCK_DGRAM, 0);
@@ -69,6 +72,9 @@ int main(int argc, char **argv) {
         if (n < 0)
             error("ERROR in recvfrom");
 
+        // Getting initial time
+        gettimeofday(&start, NULL);
+
         // gethostbyaddr: determine who sent the datagram
         hostp = gethostbyaddr((const char *)&clientaddr.sin_addr.s_addr,
                               sizeof(clientaddr.sin_addr.s_addr), AF_INET);
@@ -85,10 +91,16 @@ int main(int argc, char **argv) {
 
         answer = getRequest(buffer);
 
+        // Getting final time
+        gettimeofday(&stop, NULL);
+        processing_time = (stop.tv_sec - start.tv_sec) * 1000000 + (stop.tv_usec - start.tv_usec);
+
         // sendto: echo the input back to the client
         n = sendto(master_socket, answer, strlen(answer), 0,
                    (struct sockaddr *) &clientaddr, clientlen);
         if (n < 0)
             error("ERROR in sendto");
+
+        printf("%llu\n", processing_time);
     }
 }
