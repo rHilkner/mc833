@@ -1,4 +1,4 @@
-# MC833
+# MC833 - TCP, UDP & RMI based servers
 
 Projects from the discipline Computer Network - MC833 (State University of Campinas - UNICAMP) with the objective of building a server (TCP, UDP & RMI) that holds a (fake-ish) database of disciplines of our university and that can exchange messages with some client that can make requests about any disciplines (such as: getting a list of every disciplines with its titles; getting a list of all information available of every discipline; getting a discipline title, menu, schedule or commentary).
 
