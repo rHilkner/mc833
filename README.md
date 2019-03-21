@@ -1,6 +1,6 @@
 # MC833
 
-Projects from the discipline Computer Network - MC833 (State University of Campinas - UNICAMP) with the objective of building a servers (TCP, UDP & RMI) that holds a (fake-ish) database of disciplines of our university and that can exchange messages with some client that can make requests about any disciplines (such as: getting a list of every disciplines with its titles; getting a list of all information available of every discipline; getting a discipline title, menu, schedule or commentary).
+Projects from the discipline Computer Network - MC833 (State University of Campinas - UNICAMP) with the objective of building a server (TCP, UDP & RMI) that holds a (fake-ish) database of disciplines of our university and that can exchange messages with some client that can make requests about any disciplines (such as: getting a list of every disciplines with its titles; getting a list of all information available of every discipline; getting a discipline title, menu, schedule or commentary).
 
 If you want to execute the code, you must generate a server executable file (you can just go to the server folder via terminal and execute "make", the Makefile will generate the executable) and a client executable file. Run first the server ("./server" or equivalent) and after that you can run the client file by informing the server's internet IP address and PORT in the 2nd and 3rd arguments of the execution (equivalent to "./client 192.168.77.10 8888" or so).
 
