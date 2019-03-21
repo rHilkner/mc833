@@ -12,4 +12,4 @@ When running the application you will find a breaf tutorial in the first welcome
 • "discipline_id schedule" - Prints schedule of discipline of given id (*)/
 • "discipline_id commentary" - Prints commentary of discipline of given id (*)/
 • "discipline_id addCommentary" - Makes request to add commentary to discipline of given id (only professors allowed) (*)/
-* if the given discipline id exists on the database/
+\* if the given discipline id exists on the database/
